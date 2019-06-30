@@ -3,6 +3,7 @@ import bson
 
 from mongo_client import get_client
 
+
 def aggr_hashtags():
     db = get_client()
 
@@ -18,7 +19,9 @@ def aggr_hashtags():
                 hashtags += len(tweet['entities']['hashtags'])
 
     # insert
-    db.aggregates.update_one({'_id': bson.ObjectId(b'hashtags_num')}, {"$set": {"value": hashtags}}, upsert=True)
+    db.aggregates.update_one({'_id': bson.ObjectId(b'hashtags_num')}, {
+                             "$set": {"value": hashtags, "type": "hashtags"}}, upsert=True)
+
 
 def aggr_retweets():
     db = get_client()
@@ -35,4 +38,5 @@ def aggr_retweets():
                 retweets += tweet['retweeted_status']['retweet_count']
 
     # insert
-    db.aggregates.update_one({'_id': bson.ObjectId(b'retweets_num')}, {"$set": {"value": retweets}}, upsert=True)
+    db.aggregates.update_one({'_id': bson.ObjectId(b'retweets_num')}, {
+                             "$set": {"value": retweets, "type": "retweets"}}, upsert=True)
