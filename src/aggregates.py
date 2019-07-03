@@ -61,7 +61,4 @@ def aggr_tweets_by_user_id_by_months(user_id):
                     month = get_tweet_month(tweet) - 1
                     months_acc[month] = months_acc[month] + 1
 
-    # insert
-    user_id_key = str(user_id)
-    db.aggregates.update_one({'_id': bson.ObjectId(b'tweets_month')}, {
-                             "$set": {"type": "tweets_month", user_id_key: months_acc}}, upsert=True)
+    return months_acc
