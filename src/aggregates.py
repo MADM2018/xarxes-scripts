@@ -2,6 +2,7 @@ import os
 import bson
 
 from mongo_client import get_client
+from utils import get_tweet_month
 
 
 def aggr_hashtags():
@@ -40,3 +41,27 @@ def aggr_retweets():
     # insert
     db.aggregates.update_one({'_id': bson.ObjectId(b'retweets_num')}, {
                              "$set": {"value": retweets, "type": "retweets"}}, upsert=True)
+
+
+def aggr_tweets_by_user_id_by_months(user_id):
+    db = get_client()
+
+    months_acc = [0] * 12
+
+    for tweet in db.tweets.find():
+        # retweeted_status.retweet_count
+
+        if 'user' in tweet:
+            user = tweet['user']
+
+            if 'id' in user:
+                id = user['id']
+
+                if (id == user_id):
+                    month = get_tweet_month(tweet) - 1
+                    months_acc[month] = months_acc[month] + 1
+
+    # insert
+    user_id_key = str(user_id)
+    db.aggregates.update_one({'_id': bson.ObjectId(b'tweets_month')}, {
+                             "$set": {user_id_key: months_acc}}, upsert=True)
